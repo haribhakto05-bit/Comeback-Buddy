@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14302b">
+<meta name="description" content="Your dreams, habits and workouts every day. Built to bring you back when you slip.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Comeback">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Comeback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one phone-width column. Daily compass: why → today → schedule → week. Marigold is the only bold colour. */
+:root{
+  --bg:#eef2f0; --surface:#ffffff; --ink:#14302b; --muted:#5d716c; --line:#d3ddd9;
+  --accent:#e8930c; --accent-ink:#4a2a00; --accent-soft:#fdf0d8; --good:#2f8a5b; --good-soft:#dcefe4;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a18; --surface:#172623; --ink:#e6efec; --muted:#93a6a1; --line:#2a3d39;
+  --accent:#f4a72e; --accent-ink:#2b1800; --accent-soft:#3a2a10; --good:#5cc48d; --good-soft:#173528; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a18; --surface:#172623; --ink:#e6efec; --muted:#93a6a1; --line:#2a3d39;
+  --accent:#f4a72e; --accent-ink:#2b1800; --accent-soft:#3a2a10; --good:#5cc48d; --good-soft:#173528; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:2rem;font-weight:800;line-height:1.1;letter-spacing:-.01em}
+h2{font-size:1.15rem;font-weight:700}
+.eyebrow{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 14px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.linkbtn{border:none;background:none;padding:4px 0;color:var(--muted);text-decoration:underline;font-size:.9rem}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+
+/* header */
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:-.01em}
+.brand svg{flex:none;border-radius:10px}
+.top{display:flex;flex-direction:column;gap:6px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.stat{display:flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:.9rem}
+.stat b{font-family:var(--mono);font-size:1rem;font-variant-numeric:tabular-nums}
+
+/* comeback banner */
+.back{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.back h2{font-size:1.3rem}
+.back ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+
+/* dreams */
+.dreams{display:flex;flex-direction:column;gap:10px}
+.dream{border-left:4px solid var(--accent);padding:4px 0 4px 14px}
+.dream .what{font-family:var(--display);font-weight:700;font-size:1.15rem;line-height:1.25}
+.dream .why{color:var(--muted);font-size:.95rem}
+.who{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1rem}
+.who span{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
+
+/* dream car */
+.car{position:relative;border-radius:18px;overflow:hidden;background:var(--ink);color:var(--bg);min-height:190px;display:flex;flex-direction:column;justify-content:flex-end}
+.car img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.car .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,0) 60%)}
+.car .txt{position:relative;padding:16px 18px;display:flex;flex-direction:column;gap:2px;color:#fff}
+.car .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--accent)}
+.car .nm{font-family:var(--display);font-weight:800;font-size:1.9rem;line-height:1.05;text-wrap:balance}
+.car .add{position:relative;margin:16px 18px 0;align-self:flex-start;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.car.has .add{position:absolute;top:12px;right:12px;margin:0}
+.car.has .add button{padding:6px 10px;font-size:.8rem;background:rgba(0,0,0,.45);color:#fff;border-color:rgba(255,255,255,.4);font-weight:500}
+.car{min-height:230px}
+.car input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+
+/* daily line popup */
+.pop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(8,18,16,.62);
+  padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+.popcard{background:var(--surface);color:var(--ink);border-radius:22px;max-width:440px;width:100%;box-sizing:border-box;padding:28px 24px 22px;display:flex;flex-direction:column;gap:18px;border-top:6px solid var(--accent)}
+@media (prefers-reduced-motion:reduce){.popcard{animation:none}}
+.popline{font-family:var(--display);font-weight:800;font-size:1.65rem;line-height:1.2;text-wrap:balance;margin:0}
+.popfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lineBtn{align-self:flex-start;margin-top:6px;padding:6px 12px;font-size:.85rem;border-radius:999px}
+
+/* today */
+.progress{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--good),var(--accent));width:0;transition:width .7s cubic-bezier(.34,1.56,.64,1)}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+.habits{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.habits li+li{border-top:1px solid var(--line)}
+.habits label{display:flex;gap:12px;align-items:center;padding:13px 14px;cursor:pointer}
+.habits input{width:22px;height:22px;accent-color:var(--good);flex:none}
+.habits .t{flex:1;min-width:0}
+.habits .tm{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.habits li.done .t{color:var(--muted);text-decoration:line-through}
+.workout{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:var(--good-soft);font-size:.95rem}
+.wkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.wkhead b{font-family:var(--display);font-size:1.05rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:none;border-radius:0;padding:6px 14px;font-size:.85rem;background:transparent}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:600}
+.ex{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ex li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
+.ex li:first-child{border-top:none}
+.ex .sr{font-family:var(--mono);font-size:.82rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wktip{font-size:.85rem;color:var(--muted)}
+
+/* schedule */
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.sched div{padding:10px 14px;border-top:1px solid var(--line)}
+.sched div:nth-child(-n+2){border-top:none}
+.sched .time{font-family:var(--mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.sched .now{background:var(--accent-soft);font-weight:600;color:var(--ink)}
+
+/* week */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.day{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;color:var(--muted)}
+.dot{width:100%;max-width:40px;aspect-ratio:1;border-radius:10px;background:var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:.75rem;color:var(--ink)}
+.dot.full{background:var(--good);color:#fff}
+.dot.part{background:var(--good-soft)}
+.dot.today{outline:2px solid var(--accent);outline-offset:1px}
+
+/* editor */
+.editor{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.editor label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.9rem}
+.editor small{font-weight:400;color:var(--muted)}
+textarea,input[type=text]{font:inherit;font-weight:400;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.note{font-size:.85rem;color:var(--muted)}
+.slip{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding-top:8px;border-top:1px solid var(--line)}
+
+/* ---------- 3D + motion ---------- */
+:root{--ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+.hero3d{position:relative;height:clamp(150px,42vw,210px);border-radius:22px;overflow:hidden;background:radial-gradient(120% 110% at 50% 0%,#24584e 0%,#14302b 55%,#0b1c19 100%);touch-action:pan-y;cursor:grab}
+.hero3d:active{cursor:grabbing}
+.hero3d canvas{display:block;width:100%;height:100%}
+.hero3d .hint{position:absolute;left:14px;bottom:10px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:600;pointer-events:none}
+.hero3d .day{position:absolute;right:14px;bottom:8px;font-family:var(--display);font-weight:800;font-size:1rem;color:#f4a72e;pointer-events:none}
+@keyframes enter3d{from{opacity:0;transform:perspective(900px) translate3d(0,28px,-40px) rotateX(16deg)}to{opacity:1;transform:none}}
+.wrap>*:not(.pop){animation:enter3d .8s var(--ease) backwards}
+.wrap>*:nth-child(2){animation-delay:.07s}.wrap>*:nth-child(3){animation-delay:.14s}.wrap>*:nth-child(4){animation-delay:.21s}
+.wrap>*:nth-child(5){animation-delay:.28s}.wrap>*:nth-child(6){animation-delay:.35s}.wrap>*:nth-child(7){animation-delay:.42s}
+.wrap>*:nth-child(8){animation-delay:.49s}.wrap>*:nth-child(9){animation-delay:.56s}
+.editor:not([hidden]),.back:not([hidden]){animation:enter3d .6s var(--ease) both}
+.car{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s var(--ease),box-shadow .6s var(--ease);box-shadow:0 18px 40px -22px rgba(0,0,0,.55)}
+.car.tilting{transition:transform .12s linear}
+.car img{transform:scale(1.1) translate3d(var(--px,0px),var(--py,0px),0);transition:transform .6s var(--ease),opacity .7s ease}
+.car.tilting img{transition:transform .12s linear,opacity .7s ease}
+.car .txt{transform:translateZ(30px)}
+.pop{opacity:0;transition:opacity .35s ease;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);perspective:1100px}
+.pop.show{opacity:1}
+.popcard{transform:rotateX(-32deg) translate3d(0,40px,-60px) scale(.92);transform-origin:50% 0;transition:transform .75s var(--ease)}
+.pop.show .popcard{transform:none}
+.habits li{transition:background-color .35s ease}
+.habits li.done{background:var(--good-soft)}
+@keyframes tick3d{0%{transform:scale(.5) rotateY(0)}55%{transform:scale(1.3) rotateY(200deg)}100%{transform:scale(1) rotateY(360deg)}}
+.habits li.just input{animation:tick3d .55s var(--spring)}
+@keyframes rowpop{0%{transform:translateX(0)}40%{transform:translateX(6px)}100%{transform:none}}
+.habits li.just .t{display:inline-block;animation:rowpop .45s var(--ease)}
+@keyframes flipnum{0%{transform:perspective(200px) rotateX(-90deg);opacity:0}100%{transform:none;opacity:1}}
+.stat b.flip{display:inline-block;animation:flipnum .5s var(--spring)}
+@keyframes dotin{from{transform:scale(.4) rotateX(70deg);opacity:0}to{transform:none;opacity:1}}
+.dot{animation:dotin .6s var(--spring) backwards}
+.day:nth-child(1) .dot{animation-delay:.5s}.day:nth-child(2) .dot{animation-delay:.56s}.day:nth-child(3) .dot{animation-delay:.62s}
+.day:nth-child(4) .dot{animation-delay:.68s}.day:nth-child(5) .dot{animation-delay:.74s}.day:nth-child(6) .dot{animation-delay:.8s}.day:nth-child(7) .dot{animation-delay:.86s}
+.week.settled .dot{animation:none}
+button{transition:transform .18s var(--ease),background-color .2s,box-shadow .2s}
+button:active{transform:scale(.95)}
+.seg button{transition:background-color .3s var(--ease),color .3s}
+.workout .ex li{animation:enter3d .5s var(--ease) backwards}
+.workout .ex li:nth-child(2){animation-delay:.04s}.workout .ex li:nth-child(3){animation-delay:.08s}.workout .ex li:nth-child(4){animation-delay:.12s}.workout .ex li:nth-child(5){animation-delay:.16s}.workout .ex li:nth-child(6){animation-delay:.2s}
+.workout.settled .ex li{animation:none}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(244,167,46,0)}50%{box-shadow:0 0 0 6px rgba(244,167,46,.35)}}
+.progress.full{animation:glow 1.2s ease 2}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.car{transform:none}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg width="40" height="40" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="114" fill="#14302b"/><path d="M331.1 176.4 A128 128 0 1 0 331.1 347.6 L378.0 295.6" fill="none" stroke="#f4a72e" stroke-width="54" stroke-linecap="round"/><path d="M411.4 258.5 L416.6 330.4 L339.3 260.8 Z" fill="#f4a72e" stroke="#f4a72e" stroke-width="10" stroke-linejoin="round"/></svg><span>Comeback</span></div>
+    <div class="hero3d" id="hero3d" aria-hidden="true"><span class="hint">Drag to spin</span><span class="day" id="heroDay"></span></div>
+    <div class="eyebrow" id="dateLine">Today</div>
+    <h1 id="greet">Show up today.</h1>
+    <div class="stats">
+      <div class="stat">Streak <b id="streak">0</b> days</div>
+      <div class="stat">Comebacks <b id="comebacks">0</b></div>
+      <div class="stat">Days shown up <b id="total">0</b></div>
+    </div>
+    <button type="button" class="lineBtn" id="lineBtn">⚡ Today's line</button>
+  </header>
+
+  <div class="pop" id="pop" role="dialog" aria-modal="true" aria-labelledby="popLine" hidden>
+    <div class="popcard">
+      <div class="eyebrow" id="popDay">Today's line</div>
+      <p class="popline" id="popLine"></p>
+      <div class="popfoot"><span class="note">Read it. Then do the first thing.</span><button type="button" class="primary" id="popClose">Let's go</button></div>
+    </div>
+  </div>
+
+  <section class="back" id="backBox" hidden>
+    <h2>Welcome back. No guilt, just restart small.</h2>
+    <div>You've been away for a bit. That's normal. What matters is not missing again. Do only this today:</div>
+    <ol>
+      <li>Read your dreams below once, slowly.</li>
+      <li>10 push-ups, right now. Not the full workout.</li>
+      <li>15 minutes on one dream task.</li>
+    </ol>
+    <div class="row"><button class="primary" id="imBack" type="button">I'm back, let's go</button></div>
+  </section>
+
+  <section class="sec">
+    <div class="eyebrow">Why I'm doing this</div>
+    <div class="car" id="car">
+      <img id="carImg" alt="My dream car" hidden>
+      <div class="shade"></div>
+      <div class="add"><button type="button" id="carBtn" class="primary">Add Defender photos</button><button type="button" id="carDel" hidden>Remove this one</button></div>
+      <input type="file" id="carFile" accept="image/*" multiple aria-label="Choose Defender photos">
+      <div class="txt"><span class="lbl">Dream car</span><span class="nm" id="carName">Land Rover Defender</span><span class="note" style="color:#ddd" id="carNote">Every habit ticked today is a step closer.</span></div>
+    </div>
+    <div class="who" id="identity"></div>
+    <div class="dreams" id="dreams"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sechead"><h2>Today's non-negotiables</h2><span class="note" id="countTxt">0 of 0</span></div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="workout" id="workout"></div>
+    <ul class="habits" id="habits"></ul>
+  </section>
+
+  <section class="sec">
+    <h2>My day</h2>
+    <div class="sched" id="sched"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Last 7 days</h2>
+    <div class="week" id="week"></div>
+    <div class="note">Green = 50%+ of habits done. One missed day is fine. Never miss twice.</div>
+  </section>
+
+  <section class="slip">
+    <div class="row">
+      <button type="button" id="slipBtn">I've slipped, bring me back</button>
+      <button type="button" id="editBtn">Edit dreams &amp; habits</button>
+    </div>
+    <div class="note" id="saveNote">Loading your saved progress…</div>
+  </section>
+
+  <section class="editor" id="editor" hidden>
+    <h2>Make it yours</h2>
+    <label for="eIdentity">Who I'm becoming <small>One sentence, in your own words.</small>
+      <input type="text" id="eIdentity"></label>
+    <label for="eDreams">My dreams <small>One per line: dream | why it matters</small>
+      <textarea id="eDreams" rows="4"></textarea></label>
+    <label for="eHabits">Daily non-negotiables <small>One per line: time | habit</small>
+      <textarea id="eHabits" rows="7"></textarea></label>
+    <label for="eSched">My day schedule <small>One per line: time | what</small>
+      <textarea id="eSched" rows="8"></textarea></label>
+    <div class="row"><button class="primary" type="button" id="saveEdit">Save</button><button type="button" id="cancelEdit">Cancel</button></div>
+  </section>
+</div>
+
+<script>
+(function(){
+const DEFAULTS = {
+  identity: "I'm someone who shows up every day, even when I don't feel like it.",
+  dreams: [
+    {what:"Grow my shop into a real business", why:"I've already built my own software for it. Now I use it to grow."},
+    {what:"A strong, fit body", why:"Strength and control from calisthenics, not just looks."},
+    {what:"Discipline I can count on", why:"So fear of starting never wins again."}
+  ],
+  habits: [
+    {time:"7:00", label:"Wake up by 7, no phone for 30 min"},
+    {time:"7:15", label:"Morning pooja"},
+    {time:"", label:"Workout or 20 min walk"},
+    {time:"", label:"30 min on my dream (shop / software)"},
+    {time:"", label:"Protein in every meal"},
+    {time:"", label:"Read or learn 10 min"},
+    {time:"1:00", label:"Lights off by 1, phone on charge"}
+  ],
+  schedule: [
+    {time:"7:00", label:"Wake up, water, no phone"},
+    {time:"7:15", label:"Pooja"},
+    {time:"7:45", label:"Workout (plan day) or walk"},
+    {time:"8:45", label:"Breakfast"},
+    {time:"10:00", label:"Shop"},
+    {time:"14:00", label:"Lunch + short rest"},
+    {time:"15:00", label:"Shop"},
+    {time:"20:30", label:"Dinner"},
+    {time:"21:30", label:"30 min dream work"},
+    {time:"22:30", label:"Read 10 min, plan tomorrow"},
+    {time:"0:30", label:"Wind down: last call, no screens"},
+    {time:"1:00", label:"Lights off"}
+  ],
+  comebacks: 0,
+  carName: "Land Rover Defender",
+  carPhoto: ""
+};
+// Workout plan: Sun A, Tue B, Thu C from 8 Nov to 3 Dec 2026, test 6 Dec.
+const PLAN_START = "2026-11-08", PLAN_END = "2026-12-06";
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40) || "h";
+const today = new Date(); const TODAY = keyOf(today);
+
+let profile = JSON.parse(JSON.stringify(DEFAULTS));
+let days = {}; // date -> {done:[]}
+let db = null, uid = null;
+
+// ---------- storage ----------
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const cachedP = lsGet("bot.profile"), cachedD = lsGet("bot.days");
+if(cachedP) profile = Object.assign({}, DEFAULTS, cachedP);
+if(cachedD) days = cachedD;
+
+let chain = Promise.resolve();
+function queue(fn){chain = chain.then(fn).catch(()=>{$("saveNote").textContent="Couldn't save just now. Your ticks are kept on this device.";});}
+function saveProfile(){
+  lsSet("bot.profile", profile);
+  if(db&&uid) queue(()=>db.doc("data/users/"+uid+"/compass/profile").set(profile));
+}
+function saveDay(k){
+  lsSet("bot.days", days);
+  if(db&&uid) queue(()=>db.doc("data/users/"+uid+"/days/"+k).set({date:k, done:days[k].done}));
+}
+
+// ---------- logic ----------
+function habitIds(){return profile.habits.map(h=>slug(h.label))}
+function ratio(k){
+  const ids = habitIds(); const d = days[k]; if(!d||!ids.length) return 0;
+  return d.done.filter(x=>ids.includes(x)).length / ids.length;
+}
+const counts = k => ratio(k) >= 0.5;
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function streak(){
+  let n=0, d=new Date(today);
+  if(!counts(keyOf(d))) d=addDays(d,-1);
+  while(counts(keyOf(d))){n++; d=addDays(d,-1);}
+  return n;
+}
+function lastShownUp(){
+  const ks = Object.keys(days).filter(k=>k<TODAY && counts(k)).sort();
+  return ks.length ? ks[ks.length-1] : null;
+}
+function needsComeback(){
+  if(profile.lastComeback===TODAY) return false;
+  if(counts(TODAY)) return false;
+  const last = lastShownUp();
+  const firstSeen = profile.firstSeen || TODAY;
+  const ref = last || firstSeen;
+  const gap = Math.round((new Date(TODAY)-new Date(ref))/86400000);
+  return gap >= 2;
+}
+const TITLES={A:"Day A – Push + Core",B:"Day B – Legs + Core",C:"Day C – Pull + Full body"};
+const HOME={
+  A:[["Push-ups",["3 × 12","4 × 15","4 × 16","4 × 18"]],["Pike push-ups",["2 × 5","3 × 6","3 × 7","3 × 8"]],["Diamond push-ups",["2 × 5","3 × 6","3 × 7","3 × 8"]],["Plank",["3 × 20s","3 × 30s","3 × 35s","3 × 40s"]]],
+  B:[["Squats",["3 × 15","4 × 20","4 × 22","4 × 25"]],["Lunges (each leg)",["2 × 8","3 × 10","3 × 12","3 × 12"]],["Glute bridges",["3 × 12","3 × 15","3 × 18","3 × 8 one leg"]],["Wall sit",["3 × 20s","3 × 30s","3 × 40s","3 × 45s"]],["Hollow hold",["3 × 10s","3 × 15s","3 × 20s","3 × 25s"]]],
+  C:[["Push-ups",["3 × 12","4 × 15","4 × 16","4 × 12 decline"]],["Bulgarian split squats (each)",["2 × 6","3 × 8","3 × 10","3 × 10"]],["Pull-ups or table rows",["3 × max","3 × max","3 × max","4 × max"]],["Superman hold",["3 × 15s","3 × 20s","3 × 25s","3 × 30s"]],["Mountain climbers",["3 × 20s","3 × 30s","3 × 30s","3 × 40s"]]]
+};
+const GYM={
+  A:[["Bench press","3 × 8–10"],["Incline dumbbell press","3 × 10"],["Seated shoulder press","3 × 10"],["Lateral raises","3 × 12–15"],["Triceps rope pushdown","3 × 12"],["Hanging knee raises","3 × 10"]],
+  B:[["Squat or leg press","3 × 8–10"],["Romanian deadlift","3 × 10"],["Walking lunges (each leg)","3 × 10"],["Leg curl","3 × 12"],["Calf raises","3 × 15"],["Plank","3 × 40s"]],
+  C:[["Lat pulldown or assisted pull-ups","3 × 10"],["Seated cable row","3 × 10"],["One-arm dumbbell row (each)","3 × 10"],["Face pulls","3 × 15"],["Dumbbell biceps curls","3 × 12"],["Push-ups","2 × max"]]
+};
+function planDay(){
+  if(TODAY===PLAN_END) return "T";
+  return {0:"A",2:"B",4:"C"}[today.getDay()] || null;
+}
+function weekNo(){
+  const d=Math.floor((new Date(TODAY)-new Date(PLAN_START))/86400000);
+  return Math.max(1,Math.min(4,Math.floor(d/7)+1));
+}
+function workoutHTML(){
+  const day=planDay(), mode=profile.workoutMode==="gym"?"gym":"home";
+  if(!day) return '<div class="wkhead"><b>Rest day</b></div><div>A 20–30 min walk counts as your workout today. Muscles grow on rest days.</div>';
+  if(day==="T") return '<div class="wkhead"><b>Test day</b></div><div>After warming up, do one set each of max push-ups, max diamond push-ups and max pull-ups or rows. Compare with week 1.</div>';
+  const seg='<div class="seg" role="group" aria-label="Where are you training"><button type="button" data-mode="home" aria-pressed="'+(mode==="home")+'">Home</button><button type="button" data-mode="gym" aria-pressed="'+(mode==="gym")+'">Gym</button></div>';
+  const w=weekNo();
+  const rows = mode==="home" ? HOME[day].map(([n,s])=>[n,s[w-1]]) : GYM[day];
+  const tip = mode==="home"
+    ? "Week "+w+" of your home plan. Can't hit the reps? Do what you can with good form."
+    : "Pick a weight you can lift for the reps with 2 left in the tank. When every set hits the top of the range, add a little weight next time.";
+  return '<div class="wkhead"><b>💪 '+TITLES[day]+'</b>'+seg+'</div><ul class="ex">'+rows.map(([n,s])=>'<li><span>'+n+'</span><span class="sr">'+s+'</span></li>').join("")+'</ul><div class="wktip">'+tip+' Rest 90 sec–2 min between sets.</div>';
+}
+function mins(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||"");if(!m)return null;let v=(+m[1])*60+(+m[2]);return v<300?v+1440:v}
+
+// ---------- render ----------
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function setNum(id,v){
+  const el=$(id); v=String(v);
+  if(el.textContent!==v){ el.textContent=v; if(rendered){ el.classList.remove("flip"); void el.offsetWidth; el.classList.add("flip"); } }
+}
+let rendered=false, justTicked=null;
+function render(){
+  $("dateLine").textContent = today.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+  const h=today.getHours();
+  $("greet").textContent = h<12?"Good morning. Show up today.":h<17?"Keep going. Show up today.":"Evening. Finish today strong.";
+  setNum("streak", streak());
+  setNum("comebacks", profile.comebacks||0);
+  setNum("total", Object.keys(days).filter(counts).length);
+  $("heroDay").textContent = "Day "+(dayNum()+1);
+  $("backBox").hidden = !needsComeback();
+
+  $("carName").textContent = profile.carName || "Land Rover Defender";
+  const list = carList(), nc = list.length;
+  const idx = nc ? dayNum() % nc : 0, photo = nc ? list[idx].src : "";
+  $("carImg").hidden = !photo;
+  if(photo && $("carImg").getAttribute("src")!==photo){ const im=$("carImg"); im.style.opacity=0; im.onload=()=>{im.style.opacity=1}; im.src=photo; }
+  $("car").classList.toggle("has", !!photo);
+  $("carBtn").textContent = photo ? "+ Add more" : "Add Defender photos";
+  $("carDel").hidden = !photo;
+  if(!carBusy) $("carNote").textContent = nc>1 ? "Photo "+(idx+1)+" of "+nc+" · a new one every day" : nc===1 ? "Add more photos and a new one shows every day." : "Every habit ticked today is a step closer.";
+
+  $("identity").innerHTML = "<span>Who I'm becoming</span>"+esc(profile.identity);
+  $("dreams").innerHTML = profile.dreams.map(d=>'<div class="dream"><div class="what">'+esc(d.what)+'</div>'+(d.why?'<div class="why">'+esc(d.why)+'</div>':'')+'</div>').join("");
+
+  $("workout").innerHTML = workoutHTML();
+  const done = (days[TODAY]&&days[TODAY].done)||[];
+  $("habits").innerHTML = profile.habits.map((hb,i)=>{
+    const id=slug(hb.label), on=done.includes(id);
+    return '<li class="'+(on?'done':'')+'"><label for="h'+i+'"><input type="checkbox" id="h'+i+'" data-id="'+id+'"'+(on?' checked':'')+'><span class="t">'+esc(hb.label)+'</span>'+(hb.time?'<span class="tm">'+esc(hb.time)+'</span>':'')+'</label></li>';
+  }).join("");
+  if(justTicked){ const box=$("habits").querySelector('[data-id="'+justTicked+'"]'); if(box) box.closest("li").classList.add("just"); justTicked=null; }
+  const r = ratio(TODAY), n = profile.habits.length;
+  $("countTxt").textContent = Math.round(r*n)+" of "+n;
+  $("bar").style.width = (r*100)+"%";
+
+  const nowM = (h<5?h+24:h)*60+today.getMinutes();
+  let cur=-1; profile.schedule.forEach((s,i)=>{const m=mins(s.time); if(m!==null&&m<=nowM) cur=i;});
+  $("sched").innerHTML = profile.schedule.map((s,i)=>'<div class="time'+(i===cur?' now':'')+'">'+esc(s.time)+'</div><div class="'+(i===cur?'now':'')+'">'+esc(s.label)+(i===cur?'  ← now':'')+'</div>').join("");
+
+  let w="";
+  for(let i=6;i>=0;i--){
+    const d=addDays(today,-i), k=keyOf(d), rr=ratio(k);
+    const cls = rr>=0.999?"full":rr>=0.5?"part":"";
+    w+='<div class="day"><div class="dot '+cls+(i===0?' today':'')+'">'+(rr?Math.round(rr*100):"")+'</div>'+d.toLocaleDateString("en-IN",{weekday:"short"}).slice(0,2)+'</div>';
+  }
+  $("week").innerHTML = w;
+  if(rendered){ $("week").classList.add("settled"); $("workout").classList.add("settled"); }
+  rendered=true;
+}
+
+// ---------- dream car photos (a different one each day) ----------
+let assetsP = null, carBusy = false;
+function dayNum(){ return Math.max(0, Math.floor((new Date(TODAY)-new Date("2026-11-08"))/86400000)); }
+function localCars(){ const a=lsGet("bot.carLocalList")||[]; const old=lsGet("bot.carLocal"); if(old&&!a.includes(old)) a.unshift(old); return a; }
+function carList(){
+  const cloud = (profile.carPhotos||[]).slice();
+  if(profile.carPhoto && !cloud.includes(profile.carPhoto)) cloud.unshift(profile.carPhoto);
+  return cloud.map(u=>({src:u,where:"cloud"})).concat(localCars().map(u=>({src:u,where:"local"})));
+}
+function shrink(file,max,q){
+  return new Promise((res,rej)=>{
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement("canvas"); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res({blob:b,data:c.toDataURL("image/jpeg",q)}):rej(),"image/jpeg",q);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej()}; img.src=url;
+  });
+}
+$("carBtn").addEventListener("click", ()=>$("carFile").click());
+$("carFile").addEventListener("change", async e=>{
+  const files=[...(e.target.files||[])]; if(!files.length) return;
+  carBusy=true; let added=0, failed=0;
+  const assets = window.claude&&claude.use ? await (assetsP||(assetsP=claude.use("assets"))) : null;
+  for(const f of files){
+    $("carNote").textContent="Adding photo "+(added+failed+1)+" of "+files.length+"…";
+    try{
+      if(assets){
+        const {blob}=await shrink(f,1400,.85);
+        const r=await assets.upload(blob);
+        profile.carPhotos=(profile.carPhotos||[]).concat(r.url);
+      }else{
+        const {data}=await shrink(f,1000,.72);
+        const list=localCars(); list.push(data);
+        localStorage.setItem("bot.carLocalList",JSON.stringify(list)); localStorage.removeItem("bot.carLocal");
+      }
+      added++;
+    }catch(err){ failed++; if(!assets) break; }
+  }
+  if(assets&&added) saveProfile();
+  carBusy=false; e.target.value=""; render();
+  if(failed) $("carNote").textContent = assets ? "Added "+added+". "+failed+" couldn't be added, try JPG or PNG." : "Added "+added+". Phone storage is full, so remove a photo before adding more.";
+});
+$("carDel").addEventListener("click", ()=>{
+  const list=carList(); if(!list.length) return;
+  const cur=list[dayNum()%list.length];
+  if(cur.where==="cloud"){
+    profile.carPhotos=(profile.carPhotos||[]).filter(u=>u!==cur.src);
+    if(profile.carPhoto===cur.src) profile.carPhoto="";
+    saveProfile();
+  }else{
+    try{ localStorage.setItem("bot.carLocalList",JSON.stringify(localCars().filter(u=>u!==cur.src))); localStorage.removeItem("bot.carLocal"); }catch(e){}
+  }
+  render();
+});
+
+// ---------- events ----------
+$("workout").addEventListener("click", e=>{
+  const m=e.target.closest("[data-mode]"); if(!m) return;
+  profile.workoutMode=m.dataset.mode; saveProfile(); $("workout").classList.remove("settled"); render();
+});
+$("habits").addEventListener("change", e=>{
+  const id=e.target.dataset.id; if(!id) return;
+  const d = days[TODAY] || (days[TODAY]={done:[]});
+  d.done = e.target.checked ? [...new Set([...d.done,id])] : d.done.filter(x=>x!==id);
+  const before=ratio(TODAY);
+  if(e.target.checked) justTicked=id;
+  saveDay(TODAY); render();
+  const after=ratio(TODAY);
+  if(after>=0.999 && before<0.999){
+    const p=document.querySelector(".progress"); p.classList.remove("full"); void p.offsetWidth; p.classList.add("full");
+    window.cbCelebrate && window.cbCelebrate();
+  } else if(e.target.checked){ window.cbNudge && window.cbNudge(); }
+});
+function comeback(){
+  profile.comebacks=(profile.comebacks||0)+1; profile.lastComeback=TODAY; saveProfile(); render();
+  window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+$("imBack").addEventListener("click", comeback);
+$("slipBtn").addEventListener("click", ()=>{
+  profile.lastComeback = null; $("backBox").hidden=false;
+  $("backBox").scrollIntoView({behavior:"smooth",block:"start"});
+});
+const line = (a,b)=> a? a+" | "+b : b;
+$("editBtn").addEventListener("click", ()=>{
+  $("eIdentity").value=profile.identity;
+  $("eDreams").value=profile.dreams.map(d=>line(d.what,d.why).replace(/^(.*) \| $/,"$1")).join("\n");
+  $("eHabits").value=profile.habits.map(h=>line(h.time,h.label)).join("\n");
+  $("eSched").value=profile.schedule.map(s=>line(s.time,s.label)).join("\n");
+  $("editor").hidden=false; $("editor").scrollIntoView({behavior:"smooth"});
+});
+$("cancelEdit").addEventListener("click", ()=>{$("editor").hidden=true});
+function parse(txt, timeFirst){
+  return txt.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p=l.split("|").map(s=>s.trim());
+    return timeFirst ? (p.length>1?{time:p[0],label:p.slice(1).join(" ")}:{time:"",label:p[0]}) : {what:p[0],why:p.slice(1).join(" ")};
+  });
+}
+$("saveEdit").addEventListener("click", ()=>{
+  profile.identity = $("eIdentity").value.trim() || DEFAULTS.identity;
+  profile.dreams = parse($("eDreams").value,false);
+  profile.habits = parse($("eHabits").value,true);
+  profile.schedule = parse($("eSched").value,true);
+  saveProfile(); $("editor").hidden=true; render(); window.scrollTo({top:0});
+});
+
+// ---------- 3D tilt on the Defender card ----------
+(function(){
+  const car=$("car"); if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let raf=0;
+  function move(e){
+    const b=car.getBoundingClientRect(), x=(e.clientX-b.left)/b.width-.5, y=(e.clientY-b.top)/b.height-.5;
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      car.classList.add("tilting");
+      car.style.setProperty("--ry",(x*14).toFixed(2)+"deg"); car.style.setProperty("--rx",(-y*10).toFixed(2)+"deg");
+      car.style.setProperty("--px",(-x*14).toFixed(1)+"px"); car.style.setProperty("--py",(-y*10).toFixed(1)+"px");
+    });
+  }
+  function reset(){ cancelAnimationFrame(raf); car.classList.remove("tilting"); ["--rx","--ry","--px","--py"].forEach(k=>car.style.removeProperty(k)); }
+  car.addEventListener("pointermove",move); car.addEventListener("pointerleave",reset); car.addEventListener("pointerup",reset); car.addEventListener("pointercancel",reset);
+})();
+
+// ---------- daily line ----------
+const LINES=[
+"Discipline is doing it on the days you don't feel like it. Today might be one of those days.",
+"You don't need to feel ready. You just need to start.",
+"Small today. Big in a year.",
+"The Defender isn't bought with dreams. It's bought with days like today.",
+"Nobody is coming to do it for you. Good news: it's in your hands.",
+"The comfort zone feels safe. It's also where dreams go to sleep.",
+"One rep, one page, one customer. Start with one.",
+"You built your own shop software. You can build this habit too.",
+"Missing one day is human. Missing two is a choice. Don't choose it.",
+"Win the morning and the rest of the day gets easier.",
+"Fear shrinks the moment you take the first step.",
+"Be 1% better than yesterday. That's the whole game.",
+"Motivation starts you. Habits carry you.",
+"Your future self is watching what you do today.",
+"Do it tired. Do it slow. Just do it.",
+"The gap between the dream and the reality is called action.",
+"Every ticked box is a vote for the person you want to become.",
+"Hard choices now, easy life later. Easy choices now, hard life later.",
+"Your habits decide where you end up. Choose them on purpose.",
+"Strong body, sharp mind, growing shop. Work on all three today.",
+"Stop waiting for the perfect time. It's now.",
+"Ten push-ups is better than zero. Start there.",
+"What you do when nobody's watching builds what everyone will see.",
+"The phone can wait. Your dream can't.",
+"Show up for 30 minutes. Let consistency do the rest.",
+"You're not behind. You're starting. That's different.",
+"A lazy minute feels good. A wasted year doesn't.",
+"Your shop grows when you grow. Learn one new thing today.",
+"Sweat now, smile later.",
+"Comfort is a nice place to visit, not a place to live.",
+"Every expert was once a beginner who didn't quit.",
+"The work feels heavy for an hour. Skipping it feels heavy for years.",
+"Be proud of your comebacks, not just your streaks.",
+"Today's effort is tomorrow's confidence.",
+"You said you want it. Prove it to yourself today.",
+"Busy is not the same as productive. Do the one thing that matters.",
+"Respect your body: train it, feed it, rest it.",
+"The best version of you is built on ordinary, repeated days.",
+"Start before your fear talks you out of it.",
+"When it feels hard, that's when it's working.",
+"The people who believe in you deserve your best effort. So do you.",
+"Don't break the chain. Tick today's box.",
+"You don't need a new plan. You need to follow this one.",
+"Energy follows action. Move first, feel better after.",
+"Think less. Start more.",
+"A dream without a schedule is just a wish.",
+"Earn your sleep tonight.",
+"Winners do the basics better, every single day.",
+"Behind every dream car is a thousand ordinary days of work.",
+"Let your results do the talking.",
+"You're one decision away from a better day. Make it now.",
+"Progress over perfection. Always.",
+"Every day you show up, fear gets a little quieter.",
+"You can't control everything. You can control the next 30 minutes.",
+"Be the hardest worker in your own shop.",
+"Grow stronger than your excuses.",
+"Today is a fresh page. Write something you'll be proud of.",
+"The version of you that owns the Defender didn't skip today.",
+"Close the gap one day at a time.",
+"One more rep. One more step. One more day."
+];
+function lineIndex(){
+  const d=Math.floor((new Date(TODAY)-new Date("2026-11-08"))/86400000);
+  return ((d%LINES.length)+LINES.length)%LINES.length;
+}
+function showLine(){
+  const i=lineIndex();
+  $("popDay").textContent="Today's line · "+(i+1)+" of "+LINES.length;
+  $("popLine").textContent=LINES[i];
+  const p=$("pop"); clearTimeout(p._t); p.hidden=false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add("show")));
+  $("popClose").focus();
+}
+function closeLine(){
+  const p=$("pop"); p.classList.remove("show");
+  const instant=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  p._t=setTimeout(()=>{p.hidden=true}, instant?0:380);
+  try{localStorage.setItem("bot.lineSeen",TODAY)}catch(e){}
+  window.cbNudge && window.cbNudge();
+}
+$("popClose").addEventListener("click", closeLine);
+$("pop").addEventListener("click", e=>{ if(e.target.id==="pop") closeLine(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"&&!$("pop").hidden) closeLine(); });
+$("lineBtn").addEventListener("click", showLine);
+
+if(!profile.firstSeen){profile.firstSeen=TODAY; lsSet("bot.profile",profile);}
+render();
+let seen=null; try{seen=localStorage.getItem("bot.lineSeen")}catch(e){}
+if(seen!==TODAY) showLine();
+
+// ---------- cloud sync ----------
+(async()=>{
+  try{
+    if(!window.claude||!window.claude.use){ $("saveNote").textContent="Saved on this phone."; return; }
+    const [d,u] = await Promise.all([claude.use("db"), claude.use("user")]);
+    const id = u && await u.id();
+    if(!d||!id){ $("saveNote").textContent="Saved on this phone."; return; }
+    db=d; uid=id;
+    const timer=setTimeout(()=>{$("saveNote").textContent="Still loading. Your ticks are safe on this device.";},10000);
+    const [ps, qs] = await Promise.all([
+      db.doc("data/users/"+uid+"/compass/profile").get(),
+      db.collection("data/users/"+uid+"/days").get()
+    ]);
+    clearTimeout(timer);
+    if(ps.exists) profile = Object.assign({}, DEFAULTS, ps.data());
+    else saveProfile();
+    qs.docs.forEach(s=>{const v=s.data(); if(v&&v.done) days[s.id]={done:v.done};});
+    if(!profile.firstSeen){profile.firstSeen=TODAY; saveProfile();}
+    lsSet("bot.profile",profile); lsSet("bot.days",days);
+    $("saveNote").textContent="Saved to your account. Private to you, works on any device.";
+    render();
+  }catch(e){ $("saveNote").textContent="Saved on this phone."; }
+})();
+})();
+</script>
+<script>
+// ---------- 3D Comeback logo ----------
+(function(){
+  const host=document.getElementById("hero3d");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!window.THREE){ host.hidden=true; return; }
+  let renderer;
+  try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:"high-performance"}); }catch(e){ host.hidden=true; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  host.prepend(renderer.domElement);
+  const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(32,1,.1,100);
+  camera.position.set(0,0,7.2);
+
+  const gold=new THREE.MeshStandardMaterial({color:0xf4a72e,metalness:.55,roughness:.26,emissive:0x3a2200,emissiveIntensity:.35});
+  const logo=new THREE.Group(), R=1.05, T=.27;
+  const start=42*Math.PI/180, arc=276*Math.PI/180;
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(R,T,40,160,arc),gold); ring.rotation.z=start; logo.add(ring);
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(T,32,24),gold); cap.position.set(R*Math.cos(start),R*Math.sin(start),0); logo.add(cap);
+  const endA=start+arc, end=new THREE.Vector3(R*Math.cos(endA),R*Math.sin(endA),0);
+  const dir=new THREE.Vector3(-Math.sin(endA),Math.cos(endA),0).normalize();
+  const shaftLen=.62, shaft=new THREE.Mesh(new THREE.CylinderGeometry(T,T,shaftLen,32),gold);
+  shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); shaft.position.copy(end).addScaledVector(dir,shaftLen/2); logo.add(shaft);
+  const joint=new THREE.Mesh(new THREE.SphereGeometry(T,32,24),gold); joint.position.copy(end); logo.add(joint);
+  const head=new THREE.Mesh(new THREE.ConeGeometry(T*2.15,.62,40),gold);
+  head.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); head.position.copy(end).addScaledVector(dir,shaftLen+.28); logo.add(head);
+  logo.position.x=-.18; scene.add(logo);
+
+  // drifting particles
+  const N=180, pos=new Float32Array(N*3), spd=new Float32Array(N);
+  for(let i=0;i<N;i++){ pos[i*3]=(Math.random()-.5)*12; pos[i*3+1]=(Math.random()-.5)*5; pos[i*3+2]=-Math.random()*6-1; spd[i]=.15+Math.random()*.35; }
+  const pg=new THREE.BufferGeometry(); pg.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  const dots=new THREE.Points(pg,new THREE.PointsMaterial({color:0xffe2a8,size:.045,transparent:true,opacity:.7,depthWrite:false}));
+  scene.add(dots);
+
+  scene.add(new THREE.AmbientLight(0xffffff,.45));
+  const key=new THREE.DirectionalLight(0xfff1d6,1.25); key.position.set(-3,4,5); scene.add(key);
+  const rim=new THREE.PointLight(0x4fd1b0,1.4,20); rim.position.set(3,-2,2); scene.add(rim);
+  const back=new THREE.PointLight(0xf4a72e,.8,20); back.position.set(0,2,-3); scene.add(back);
+
+  function size(){ const w=host.clientWidth,h=host.clientHeight; if(!w||!h) return; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = w<420?38:32; camera.updateProjectionMatrix(); }
+  size(); if(window.ResizeObserver) new ResizeObserver(size).observe(host); else addEventListener("resize",size);
+
+  // drag to spin with inertia
+  let dragging=false, lx=0, ly=0, vy=0, vx=0, rotY=0, rotX=0, spin=0, burst=0;
+  host.addEventListener("pointerdown",e=>{dragging=true; lx=e.clientX; ly=e.clientY; vy=vx=0; host.setPointerCapture&&host.setPointerCapture(e.pointerId);});
+  host.addEventListener("pointermove",e=>{ if(!dragging) return; const dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY; vy=dx*.012; vx=dy*.008; rotY+=vy; rotX=Math.max(-.6,Math.min(.6,rotX+vx)); if(still) draw(0); });
+  const up=()=>{dragging=false}; host.addEventListener("pointerup",up); host.addEventListener("pointercancel",up);
+
+  window.cbCelebrate=()=>{ burst=1; };          // full spin when all habits are done
+  window.cbNudge=()=>{ spin=Math.max(spin,.35); }; // small spin on each tick
+
+  let t0=performance.now(), last=t0, running=false, visible=true;
+  function draw(t){
+    const dt=Math.min(.05,(t-last)/1000); last=t; const s=(t-t0)/1000;
+    if(!dragging){ vy*=.94; vx*=.9; rotY+=vy; rotX*=.96; }
+    if(burst>0){ rotY+=dt*burst*14; burst=Math.max(0,burst-dt*.9); }
+    if(spin>0){ rotY+=dt*spin*9; spin=Math.max(0,spin-dt*.8); }
+    logo.rotation.y = rotY + (still?0:Math.sin(s*.7)*.45);
+    logo.rotation.x = rotX + (still?0:Math.sin(s*.9)*.08);
+    logo.position.y = still?0:Math.sin(s*1.3)*.08;
+    gold.emissiveIntensity = .35 + burst*.9;
+    if(!still){ for(let i=0;i<N;i++){ pos[i*3+1]+=spd[i]*dt*.35; if(pos[i*3+1]>2.6) pos[i*3+1]=-2.6; } pg.attributes.position.needsUpdate=true; dots.rotation.y=s*.03; }
+    renderer.render(scene,camera);
+  }
+  function loop(t){ if(!running) return; draw(t); requestAnimationFrame(loop); }
+  function play(){ if(still){ draw(performance.now()); return; } if(running||!visible||document.hidden) return; running=true; last=performance.now(); requestAnimationFrame(loop); }
+  function pause(){ running=false; }
+  if(window.IntersectionObserver) new IntersectionObserver(es=>{ visible=es[0].isIntersecting; visible?play():pause(); }).observe(host);
+  document.addEventListener("visibilitychange",()=>document.hidden?pause():play());
+  play();
+})();
+</script>
+
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));}
+</script>
+</body>
+</html>
