@@ -10,9 +10,25 @@
 <meta name="apple-mobile-web-app-title" content="Comeback">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+.inst{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:center;
+  padding:0 max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+  transform:translateY(120%);transition:transform .6s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.inst.show{transform:none;pointer-events:auto}
+.instcard{width:100%;max-width:460px;box-sizing:border-box;background:#14302b;color:#fff;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px -10px rgba(0,0,0,.6);border:1px solid rgba(244,167,46,.35)}
+.insttop{display:flex;gap:12px;align-items:center}
+.insttop img{width:52px;height:52px;border-radius:13px;flex:none}
+.insttop b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem;display:block}
+.insttop span{font-size:.88rem;color:rgba(255,255,255,.75)}
+.instbtns{display:flex;gap:8px;justify-content:flex-end}
+.instbtns button{font:inherit;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff}
+.instbtns .go{background:#f4a72e;border-color:#f4a72e;color:#2b1800;font-weight:600}
+.ios{font-size:.9rem;color:rgba(255,255,255,.85);line-height:1.5}
+@media (prefers-reduced-motion:reduce){.inst{transition:none}}
+</style>
 </head>
 <body>
 <title>Comeback</title>
@@ -769,6 +785,37 @@ if(seen!==TODAY) showLine();
 })();
 </script>
 
+<div class="inst" id="inst" role="dialog" aria-labelledby="instTitle">
+  <div class="instcard">
+    <div class="insttop"><img src="/icon-192.png" alt=""><div><b id="instTitle">Install Comeback</b><span>Opens full screen from your home screen and works offline.</span></div></div>
+    <div class="ios" id="instIos" hidden>On iPhone: tap the Share button <b>⬆︎</b> at the bottom of Safari, then <b>Add to Home Screen</b>.</div>
+    <div class="instbtns"><button type="button" id="instLater">Not now</button><button type="button" class="go" id="instGo">Install</button></div>
+  </div>
+</div>
+<script>
+(function(){
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if(standalone) return;
+  const box=document.getElementById("inst"), ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  let deferred=null, shown=false;
+  function snoozed(){ try{ return Date.now() < +(localStorage.getItem("cb.instSnooze")||0); }catch(e){ return false; } }
+  function lineOpen(){ const p=document.getElementById("pop"); return p && !p.hidden; }
+  function show(){
+    if(shown||snoozed()) return;
+    if(lineOpen()){ setTimeout(show,800); return; }   // wait until today's line is closed
+    shown=true; box.classList.add("show");
+  }
+  function hide(days){ box.classList.remove("show"); if(days){ try{ localStorage.setItem("cb.instSnooze", Date.now()+days*864e5); }catch(e){} } }
+  window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferred=e; setTimeout(show,1200); });
+  window.addEventListener("appinstalled", ()=>hide(3650));
+  if(ios){ document.getElementById("instIos").hidden=false; document.getElementById("instGo").textContent="Got it"; setTimeout(show,1500); }
+  document.getElementById("instLater").addEventListener("click", ()=>hide(3));
+  document.getElementById("instGo").addEventListener("click", async ()=>{
+    if(deferred){ deferred.prompt(); const r=await deferred.userChoice; deferred=null; hide(r.outcome==="accepted"?3650:3); }
+    else hide(30);
+  });
+})();
+</script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));}
 </script>
